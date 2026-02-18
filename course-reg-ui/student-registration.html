@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Course Registration - Student Registration</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="app.js"></script>
+  <script defer>
+    window.addEventListener("DOMContentLoaded", () => {
+      const msg = qs("msg");
+      const data = loadData();
+
+      function currentStudent(){
+        const auth = getAuth();
+        if(auth.role !== "student") return null;
+        return data.users.students.find(s => s.id === auth.userId) || null;
+      }
+
+      function renderEnrollments(){
+        const st = currentStudent();
+        const tbody = qs("enrolledBody");
+        tbody.innerHTML = "";
+
+        if(!st){
+          setMsg(msg, "", "Please log in as a student to view and register sessions.");
+          return;
+        }
+
+        setMsg(msg, "ok", `Welcome, ${st.name} (${st.id}).`);
+
+        // show sessions student is enrolled in
+        const enrolledSessions = Object.entries(data.enrollments)
+          .filter(([sid, list]) => list.includes(st.id))
+          .map(([sid]) => data.sessions.find(s => s.sessionId===sid))
+          .filter(Boolean);
+
+        enrolledSessions.forEach(s => {
+          const d = getSessionDetails(data, s);
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${d.sessionId}</td>
+            <td>${d.course.dept} ${d.course.num} - ${d.course.title}</td>
+            <td>${d.time}</td>
+            <td>${d.instructor ? d.instructor.name : "TBA"}</td>
+            <td><button class="btn small danger" data-drop="${d.sessionId}">Drop</button></td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        // drop handler
+        tbody.querySelectorAll("[data-drop]").forEach(btn => {
+          btn.addEventListener("click", () => {
+            dropStudent(btn.dataset.drop, st.id);
+            location.reload();
+          });
+        });
+      }
+
+      function renderSessionOptions(){
+        const select = qs("sessionSelect");
+        select.innerHTML = "";
+        data.sessions.forEach(s => {
+          const d = getSessionDetails(data, s);
+          const opt = document.createElement("option");
+          opt.value = d.sessionId;
+          opt.textContent = `${d.sessionId} — ${d.course.dept} ${d.course.num} (${d.enrolled}/${d.max})`;
+          select.appendChild(opt);
+        });
+      }
+
+      // login
+      qs("loginBtn").addEventListener("click", () => {
+        const id = qs("studentId").value.trim();
+        const pw = qs("studentPw").value.trim();
+        const found = data.users.students.find(u => u.id===id && u.password===pw);
+        if(!found){
+          setMsg(msg, "bad", "Login failed. Check your student ID and password.");
+          return;
+        }
+        setAuth("student", found.id);
+        location.reload();
+      });
+
+      // register
+      qs("registerBtn").addEventListener("click", () => {
+        const st = currentStudent();
+        if(!st){
+          setMsg(msg, "bad", "You must log in first.");
+          return;
+        }
+        const sessionId = qs("sessionSelect").value;
+        const result = enrollStudent(sessionId, st.id);
+        setMsg(msg, result.ok ? "ok" : "bad", result.msg);
+        if(result.ok) setTimeout(()=>location.reload(), 400);
+      });
+
+      // init
+      renderSessionOptions();
+      renderEnrollments();
+    });
+  </script>
+</head>
+<body>
+  <div class="topbar">
+    <div class="inner">
+      <div class="brand">
+        <span>🎓 CourseReg UI</span>
+        <span class="badge">Student Registration</span>
+      </div>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="course-search.html">Course Search</a>
+        <a href="student-registration.html">Student Registration</a>
+        <a href="instructor-schedule.html">Instructor Schedule</a>
+        <a href="session-enrollment.html">Session Enrollment</a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="grid">
+      <section class="card">
+        <h1 class="h1">Student Registration</h1>
+        <p class="p">Log in, view enrolled sessions, and register for a new session. Validation blocks duplicates and full sessions.</p>
+
+        <div id="msg" class="msg" hidden></div>
+
+        <div class="hr"></div>
+
+        <h2 class="h2">Your Enrolled Sessions</h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Session</th>
+              <th>Course</th>
+              <th>Time</th>
+              <th>Instructor</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="enrolledBody"></tbody>
+        </table>
+      </section>
+
+      <aside class="card">
+        <h2 class="h2">Student Login</h2>
+        <div class="field">
+          <label>Student ID</label>
+          <input id="studentId" placeholder="s1001" />
+        </div>
+        <div class="field" style="margin-top:10px;">
+          <label>Password</label>
+          <input id="studentPw" type="password" placeholder="pass123" />
+        </div>
+        <button id="loginBtn" class="btn primary" style="margin-top:12px;">Log in</button>
+
+        <div class="hr"></div>
+
+        <h2 class="h2">Register for a Session</h2>
+        <div class="field">
+          <label>Select Session</label>
+          <select id="sessionSelect"></select>
+        </div>
+        <button id="registerBtn" class="btn primary" style="margin-top:12px;">Register</button>
+
+        <p class="footer-note">
+          Demo: s1001 / pass123
+        </p>
+      </aside>
+    </div>
+  </div>
+</body>
+</html>

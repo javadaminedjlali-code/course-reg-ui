@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Course Registration - Home</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="app.js"></script>
+  <script defer>
+    window.addEventListener("DOMContentLoaded", () => {
+      const auth = getAuth();
+      const status = document.getElementById("status");
+
+      if(auth.role){
+        status.textContent = `Logged in as: ${auth.role} (${auth.userId})`;
+      } else {
+        status.textContent = "Not logged in (use Student Registration or Instructor Schedule to log in).";
+      }
+
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        clearAuth();
+        location.reload();
+      });
+    });
+  </script>
+</head>
+<body>
+  <div class="topbar">
+    <div class="inner">
+      <div class="brand">
+        <span>🎓 CourseReg UI</span>
+        <span class="badge">Draft UI/UX</span>
+      </div>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="course-search.html">Course Search</a>
+        <a href="student-registration.html">Student Registration</a>
+        <a href="instructor-schedule.html">Instructor Schedule</a>
+        <a href="session-enrollment.html">Session Enrollment</a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="grid">
+      <section class="card">
+        <h1 class="h1">Online Course Registration System</h1>
+        <p class="p">
+          This is a browser-based draft UI. It demonstrates consistent navigation, searchable course info,
+          student registration with validation, instructor schedules, and a restricted enrollment list.
+        </p>
+
+        <div class="hr"></div>
+
+        <div class="row">
+          <a class="btn primary" href="course-search.html">🔎 Go to Course Search</a>
+          <a class="btn primary" href="student-registration.html">🧑‍🎓 Go to Student Registration</a>
+          <a class="btn primary" href="instructor-schedule.html">🧑‍🏫 Go to Instructor Schedule</a>
+          <a class="btn" href="session-enrollment.html">📋 View Session Enrollment</a>
+        </div>
+
+        <p class="footer-note">Tip: open these files in a browser so the URL bar shows the local .html path.</p>
+      </section>
+
+      <aside class="card">
+        <h2 class="h2">Login Status</h2>
+        <p id="status" class="msg"></p>
+        <button id="logoutBtn" class="btn danger">Log out</button>
+
+        <div class="hr"></div>
+        <p class="p">
+          Demo accounts:
+          <br/>Student: <b>s1001</b> / pass: <b>pass123</b>
+          <br/>Instructor: <b>i2001</b> / pass: <b>teach123</b>
+        </p>
+      </aside>
+    </div>
+  </div>
+</body>
+</html>

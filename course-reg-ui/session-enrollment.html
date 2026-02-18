@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Course Registration - Session Enrollment</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="app.js"></script>
+  <script defer>
+    window.addEventListener("DOMContentLoaded", () => {
+      const data = loadData();
+      const msg = qs("msg");
+
+      // Authorized users for enrollment list: instructors (and optionally admin)
+      if(!requireRole(["instructor","admin"])){
+        setMsg(msg, "bad", "Access denied: only authorized users (instructors/admin) can view enrollment lists.");
+        qs("controls").hidden = true;
+        return;
+      }
+
+      setMsg(msg, "ok", "Authorized access granted.");
+
+      const select = qs("sessionSelect");
+      data.sessions.forEach(s => {
+        const d = getSessionDetails(data, s);
+        const opt = document.createElement("option");
+        opt.value = d.sessionId;
+        opt.textContent = `${d.sessionId} — ${d.course.dept} ${d.course.num}`;
+        select.appendChild(opt);
+      });
+
+      function render(){
+        const sid = select.value;
+        const list = data.enrollments[sid] || [];
+        const tbody = qs("studentsBody");
+        tbody.innerHTML = "";
+
+        list.forEach(studentId => {
+          const st = data.users.students.find(x => x.id===studentId);
+          const tr = document.createElement("tr");
+          tr.innerHTML = `<td>${st ? st.id : studentId}</td><td>${st ? st.name : "Unknown"}</td>`;
+          tbody.appendChild(tr);
+        });
+
+        qs("count").textContent = `${list.length} student(s) enrolled`;
+      }
+
+      select.addEventListener("change", render);
+      render();
+    });
+  </script>
+</head>
+<body>
+  <div class="topbar">
+    <div class="inner">
+      <div class="brand">
+        <span>🎓 CourseReg UI</span>
+        <span class="badge">Session Enrollment</span>
+      </div>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="course-search.html">Course Search</a>
+        <a href="student-registration.html">Student Registration</a>
+        <a href="instructor-schedule.html">Instructor Schedule</a>
+        <a href="session-enrollment.html">Session Enrollment</a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="container">
+    <section class="card">
+      <h1 class="h1">Session Enrollment</h1>
+      <p class="p">Shows the list of students enrolled in a particular session. This page is restricted to authorized users.</p>
+
+      <div id="msg" class="msg" hidden></div>
+
+      <div id="controls">
+        <div class="hr"></div>
+
+        <div class="row">
+          <div class="field" style="max-width:420px;">
+            <label>Select Session</label>
+            <select id="sessionSelect"></select>
+          </div>
+          <div class="field" style="max-width:260px;">
+            <label>Enrollment Count</label>
+            <div id="count" class="msg"></div>
+          </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Student ID</th>
+              <th>Name</th>
+            </tr>
+          </thead>
+          <tbody id="studentsBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

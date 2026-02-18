@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Course Registration - Instructor Schedule</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="app.js"></script>
+  <script defer>
+    window.addEventListener("DOMContentLoaded", () => {
+      const data = loadData();
+      const msg = qs("msg");
+
+      function currentInstructor(){
+        const auth = getAuth();
+        if(auth.role !== "instructor") return null;
+        return data.users.instructors.find(i => i.id === auth.userId) || null;
+      }
+
+      function renderSchedule(){
+        const inst = currentInstructor();
+        const tbody = qs("schedBody");
+        tbody.innerHTML = "";
+
+        if(!inst){
+          setMsg(msg, "", "Please log in as an instructor to view your assigned sessions.");
+          return;
+        }
+        setMsg(msg, "ok", `Welcome, ${inst.name} (${inst.id}).`);
+
+        const assigned = data.sessions.filter(s => s.instructorId === inst.id);
+        assigned.forEach(s => {
+          const d = getSessionDetails(data, s);
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${d.sessionId}</td>
+            <td>${d.course.dept} ${d.course.num} - ${d.course.title}</td>
+            <td>${d.time}</td>
+            <td>${d.enrolled} / ${d.max}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      qs("loginBtn").addEventListener("click", () => {
+        const id = qs("instId").value.trim();
+        const pw = qs("instPw").value.trim();
+        const found = data.users.instructors.find(u => u.id===id && u.password===pw);
+        if(!found){
+          setMsg(msg, "bad", "Login failed. Check your instructor ID and password.");
+          return;
+        }
+        setAuth("instructor", found.id);
+        location.reload();
+      });
+
+      renderSchedule();
+    });
+  </script>
+</head>
+<body>
+  <div class="topbar">
+    <div class="inner">
+      <div class="brand">
+        <span>🎓 CourseReg UI</span>
+        <span class="badge">Instructor Schedule</span>
+      </div>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="course-search.html">Course Search</a>
+        <a href="student-registration.html">Student Registration</a>
+        <a href="instructor-schedule.html">Instructor Schedule</a>
+        <a href="session-enrollment.html">Session Enrollment</a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="grid">
+      <section class="card">
+        <h1 class="h1">Instructor Schedule</h1>
+        <p class="p">Instructors log in and view the sessions they are assigned to teach.</p>
+
+        <div id="msg" class="msg" hidden></div>
+
+        <div class="hr"></div>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Session</th>
+              <th>Course</th>
+              <th>Time</th>
+              <th>Enrollment</th>
+            </tr>
+          </thead>
+          <tbody id="schedBody"></tbody>
+        </table>
+      </section>
+
+      <aside class="card">
+        <h2 class="h2">Instructor Login</h2>
+        <div class="field">
+          <label>Instructor ID</label>
+          <input id="instId" placeholder="i2001" />
+        </div>
+        <div class="field" style="margin-top:10px;">
+          <label>Password</label>
+          <input id="instPw" type="password" placeholder="teach123" />
+        </div>
+        <button id="loginBtn" class="btn primary" style="margin-top:12px;">Log in</button>
+
+        <p class="footer-note">
+          Demo: i2001 / teach123
+        </p>
+      </aside>
+    </div>
+  </div>
+</body>
+</html>

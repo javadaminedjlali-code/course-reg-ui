@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Course Registration - Course Search</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="app.js"></script>
+  <script defer>
+    window.addEventListener("DOMContentLoaded", () => {
+      const data = loadData();
+      const resultsBody = qs("resultsBody");
+
+      function render(list){
+        resultsBody.innerHTML = "";
+        list.forEach(s => {
+          const d = getSessionDetails(data, s);
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${d.sessionId}</td>
+            <td>${d.course.dept} ${d.course.num}</td>
+            <td>${d.course.title}</td>
+            <td>${d.course.credits}</td>
+            <td>${d.course.prereq}</td>
+            <td>${d.course.modality}</td>
+            <td>${d.instructor ? d.instructor.name : "TBA"}</td>
+            <td>${d.time}</td>
+            <td>${d.enrolled} / ${d.max}</td>
+          `;
+          resultsBody.appendChild(tr);
+        });
+      }
+
+      render(data.sessions);
+
+      qs("searchBtn").addEventListener("click", () => {
+        const dept = qs("dept").value.trim().toUpperCase();
+        const instructor = qs("instructor").value.trim().toLowerCase();
+        const num = qs("courseNum").value.trim();
+
+        const filtered = data.sessions.filter(s => {
+          const course = findCourse(data.courses, s.dept, s.num);
+          const inst = data.users.instructors.find(i => i.id===s.instructorId);
+
+          const okDept = !dept || s.dept === dept;
+          const okNum = !num || s.num === num;
+          const okInst = !instructor || (inst && inst.name.toLowerCase().includes(instructor));
+
+          return okDept && okNum && okInst && !!course;
+        });
+
+        render(filtered);
+      });
+
+      qs("resetBtn").addEventListener("click", () => {
+        qs("dept").value = "";
+        qs("instructor").value = "";
+        qs("courseNum").value = "";
+        render(data.sessions);
+      });
+    });
+  </script>
+</head>
+<body>
+  <div class="topbar">
+    <div class="inner">
+      <div class="brand">
+        <span>🎓 CourseReg UI</span>
+        <span class="badge">Course Search</span>
+      </div>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="course-search.html">Course Search</a>
+        <a href="student-registration.html">Student Registration</a>
+        <a href="instructor-schedule.html">Instructor Schedule</a>
+        <a href="session-enrollment.html">Session Enrollment</a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="container">
+    <section class="card">
+      <h1 class="h1">Course Search</h1>
+      <p class="p">Search by department, instructor name, or course number. Results show course details and enrollment capacity.</p>
+
+      <div class="row">
+        <div class="field">
+          <label>Department (ex: INFO)</label>
+          <input id="dept" placeholder="INFO" />
+        </div>
+        <div class="field">
+          <label>Instructor (ex: Rivera)</label>
+          <input id="instructor" placeholder="Rivera" />
+        </div>
+        <div class="field">
+          <label>Course Number (ex: 320)</label>
+          <input id="courseNum" placeholder="320" />
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:12px;">
+        <button id="searchBtn" class="btn primary">Search</button>
+        <button id="resetBtn" class="btn">Reset</button>
+      </div>
+
+      <div class="hr"></div>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Session</th>
+            <th>Course</th>
+            <th>Title</th>
+            <th>Credits</th>
+            <th>Prereq</th>
+            <th>Modality</th>
+            <th>Instructor</th>
+            <th>Time</th>
+            <th>Enrolled</th>
+          </tr>
+        </thead>
+        <tbody id="resultsBody"></tbody>
+      </table>
+    </section>
+  </div>
+</body>
+</html>
