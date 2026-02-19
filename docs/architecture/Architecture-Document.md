@@ -77,6 +77,7 @@ Key Constraints:
 - Enrollments must prevent duplicate registration for the same student in the same session (unique constraint on student_id + session_id).
 - Sessions.max_enrollment is enforced so enrollments cannot exceed capacity.
 
+![ER Diagram](Diagrams/ERD.png)
 
 ## 7. Network Architecture and Security
 The network architecture uses a dedicated VPC with redundant public and private subnets across two Availability Zones, placing the Application Load Balancer in public subnets and the application and database tiers in private subnets for isolation. Security groups will allow inbound HTTP/HTTPS (80/443) to the load balancer, allow only the application port (e.g., 3000) from the load balancer to the EC2 instances, allow MySQL (3306) only from the application tier to the database, and include restricted administrative access (SSH 22 for Linux or RDP 3389 for Windows) and ICMP/ping for troubleshooting from approved team IP addresses.
@@ -168,3 +169,6 @@ We faced challenges aligning naming conventions and merging edits across multipl
 
 ## 12. Collaboration and GitHub Proof
 This architecture document and all supporting diagrams were committed to the team GitHub repository under the agreed documentation folder structure. A screenshot is included showing the document and diagram files in the repository to prove collaboration and successful posting.
+![Repository Screenshot 1](screenshots/screenshot%20repository%201.PNG)
+
+![Repository Screenshot 2](screenshots/screenshot%20repository%202.PNG)
