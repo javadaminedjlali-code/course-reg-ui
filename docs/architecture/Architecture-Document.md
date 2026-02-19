@@ -9,6 +9,25 @@ Amazon Web Services (AWS) was selected as the cloud service provider because it 
 ## 3. AWS Services Used
 The architecture will use AWS VPC, subnets, route tables, and an Internet Gateway to create a secure network boundary, plus an Application Load Balancer to distribute traffic across multiple application servers. The system will run on EC2 with an Auto Scaling Group for resiliency, store static assets in S3, host the database in RDS MySQL, and use IAM and Security Groups for access control along with CloudWatch for monitoring and logging.
 
+| Category | AWS Service | Purpose in our system |
+|---|---|---|
+| Networking | VPC | Private network boundary for all resources |
+| Networking | Public Subnets (2 AZs) | Hosts internet-facing components like the load balancer |
+| Networking | Private App Subnets (2 AZs) | Hosts application servers (not directly internet-accessible) |
+| Networking | Private DB Subnets (2 AZs) | Hosts the database tier (isolated) |
+| Networking | Internet Gateway (IGW) | Allows public subnets to reach the internet |
+| Networking (optional) | NAT Gateway | Allows private subnets to reach the internet for updates without being public |
+| Traffic | Application Load Balancer (ALB) | Distributes traffic to healthy EC2 instances |
+| Compute | EC2 | Runs the Node/Express API |
+| Scaling | Auto Scaling Group (ASG) | Maintains multiple app servers across AZs for resiliency |
+| Database | RDS (MySQL) | Managed MySQL database for application data |
+| Storage | S3 | Stores static assets (images, exports, uploads) |
+| Security | IAM | Controls permissions to AWS resources |
+| Security | Security Groups | Firewall rules for ALB/EC2/RDS traffic |
+| Monitoring | CloudWatch | Logs, metrics, and alarms for troubleshooting and performance |
+| Configuration | SSM Parameter Store (or Secrets Manager) | Stores DB credentials and app config securely |
+
+
 ## 4. Application Design
 The application will be built in JavaScript using the Node.js runtime with Express as the middleware, and it will expose a RESTful API that sends and receives JSON. The user interface will be implemented using React (or another chosen framework) and will interact with API endpoints for course search, registration, instructor schedules, and session enrollment management.
 
