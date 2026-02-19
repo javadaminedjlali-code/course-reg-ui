@@ -108,8 +108,8 @@ Security Groups:
   - Outbound: 3306 to SG-DB, 443 to internet (via NAT)
 - SG-DB (RDS):
   - Inbound: 3306 from SG-App only
- 
 
+![Network Architecture Diagram](Diagrams/Network%20Diagram%20INFO465.png)
 
 ## 8. Data Visualization Tool Standard
 Power BI is selected as the team’s data visualization standard because it provides strong dashboarding features, easy integration with relational data sources like MySQL, and useful AI-assisted insights for summarizing trends. It is also widely used in business environments, relatively cost-effective to scale, and familiar to many teams due to its integration with Microsoft tools.
