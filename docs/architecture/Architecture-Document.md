@@ -148,18 +148,24 @@ For the initial build, the system is assumed to be open to anyone and does not r
 The system is assumed to be open to anyone for initial building and testing, and detailed authentication/authorization implementation is out of scope. Roles are still defined for the application design: Student (search/register), Instructor (view schedule), and Administrator/Authorized User (view session enrollment lists).
 
 ## 11. Team Responsibilities and Contribution Summary
-Team responsibilities are divided so that a Cloud Architect defines AWS resources, an Application Developer defines the runtime and API design, a Database Architect produces the 3NF ERD, a Network Engineer designs the VPC/subnets and security rules, a QA Analyst defines the testing strategy, and a Project Manager coordinates timelines and merges deliverables. Each member contributed written sections and/or diagrams to this document, and any collaboration challenges (such as aligning schema definitions or resolving merge conflicts) were handled through team check-ins, shared standards, and final review before submission.
+Team responsibilities are divided so that a Cloud Architect defines AWS resources, an Application Developer defines the runtime and API design, a Database Architect produces the ERD, a Network Engineer designs the VPC/subnets and security rules, a QA Analyst defines the testing strategy, and a Project Manager coordinates timelines and merges deliverables. Each member contributed written sections and/or diagrams to this document, and any collaboration challenges (such as aligning schema definitions or resolving merge conflicts) were handled through team check-ins, shared standards, and final review before submission.
 
 Roles and Contributions:
-- Cloud Architect (Name): Selected AWS services, compute, scaling, and monitoring components.
-- Application Developer (Name): Defined Node/Express runtime, REST API design, endpoints, and port configuration.
-- Database Architect (Name): Built ERD in 3NF and documented schema constraints.
-- Network Engineer (Name): Designed VPC/subnets and security group ingress/egress rules; created network diagram.
-- QA Analyst (Name): Defined unit, integration, and end-to-end testing strategy and tools.
-- Project Manager (Name): Coordinated collaboration, ensured rubric coverage, and managed final document merge.
+- Cloud Architect: Selected AWS services, compute, scaling, and monitoring components.
+- Application Developer: Defined Node/Express runtime, REST API design, endpoints, and port configuration.
+- Database Architect: Built ERD in 3NF and documented schema constraints.
+- Network Engineer: Designed VPC/subnets and security group ingress/egress rules; created network diagram.
+- QA Analyst: Defined unit, integration, and end-to-end testing strategy and tools.
+- Project Manager: Coordinated collaboration, ensured rubric coverage, and managed final document merge.
+
+We all contributed meaningfully to the project and collaborated to complete the architecture document and supporting diagrams. Saleh served as the **Cloud Architect**, leading the selection of AWS services and defining the core cloud resources (EC2, RDS, S3, ALB, and scaling considerations). Yusuf served as the **Database Architect**, developing the database schema, creating the ER diagram, and ensuring the design aligns with **third normal form (3NF)**. Javad served as the **Network Engineer**, designing the VPC architecture with redundant public/private subnets, documenting firewall controls through security groups, and defining required port access for the application and database.
+
+Because our project is currently focused on the foundational architecture document, the responsibilities of **Application Developer**, **QA Analyst**, and **Project Manager** were handled jointly by the team. As **Application Developer**, we collectively defined the runtime environment (Node.js), middleware (Express), RESTful API approach, and required port configurations (HTTP/HTTPS and the application port). As **QA Analyst**, we jointly documented the testing plan including unit, integration, and end-to-end testing approaches to be used during sprints. As **Project Manager**, we coordinated timelines and ensured the final document met the rubric and deliverables.
+
+The main challenge during collaboration was organizing and updating files correctly in GitHub, including committing changes to the correct folders and avoiding merge conflicts when multiple people edited the same file. We resolved this by assigning ownership of major sections, using consistent file naming and folder structure, and having one person perform the final merge and verification to confirm that the document, diagrams, and GitHub proof screenshot were successfully pushed to the repository. Overall, everyone contributed fairly and stayed aligned with the assignment requirements.
 
 Challenges and Resolutions:
-We faced challenges aligning naming conventions and merging edits across multiple contributors. These were resolved by assigning one final editor to merge changes, using consistent standards for diagrams/tables, and reviewing the rubric together before committing.
+We faced challenges aligning naming conventions and merging edits across multiple contributors. These were resolved by assigning one final editor to merge changes, using consistent standards for diagrams/tables, and reviewing before committing.
 
 ## 12. Collaboration and GitHub Proof
 This architecture document and all supporting diagrams were committed to the team GitHub repository under the agreed documentation folder structure. A screenshot is included showing the document and diagram files in the repository to prove collaboration and successful posting.
