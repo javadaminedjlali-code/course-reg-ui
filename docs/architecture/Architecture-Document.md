@@ -31,11 +31,51 @@ The architecture will use AWS VPC, subnets, route tables, and an Internet Gatewa
 ## 4. Application Design
 The application will be built in JavaScript using the Node.js runtime with Express as the middleware, and it will expose a RESTful API that sends and receives JSON. The user interface will be implemented using React (or another chosen framework) and will interact with API endpoints for course search, registration, instructor schedules, and session enrollment management.
 
+- Programming Language: JavaScript
+- Runtime Environment: Node.js (LTS)
+- Middleware: Express
+- API Style: RESTful API (JSON)
+- Front-End Framework: React (or Angular / None)
+- Application Port: 3000 (example)
+
+- Example Endpoints:
+- GET /api/courses?dept=CS
+- GET /api/courses/:courseId
+- GET /api/sessions?courseId=:courseId
+- POST /api/enrollments
+- DELETE /api/enrollments/:enrollmentId
+- GET /api/instructors/:instructorId/schedule
+- GET /api/sessions/:sessionId/enrollments
+
+
+
 ## 5. Operating System and Virtual Server Configuration
 The virtual servers will run Linux (Amazon Linux 2023 or Ubuntu LTS) because it is stable, widely supported on AWS, and well-suited for hosting Node.js applications with efficient resource usage. The application tier will use EC2 instances (e.g., t3.small with 2 vCPU/2 GB RAM and ~20–30 GB gp3 storage) behind an Auto Scaling Group spread across two Availability Zones to support performance and high availability.
 
+- Operating System: Amazon Linux 2023 (Linux)
+- Reason: Lightweight, secure, widely supported on AWS, and well-suited for Node.js hosting.
+
+Server Configuration:
+| Item | Choice |
+|---|---|
+| Instance Type | t3.small |
+| vCPU / RAM | 2 vCPU / 2 GB |
+| Storage | 20–30 GB gp3 EBS |
+| Deployment | Auto Scaling Group (min 2, desired 2, max 4) |
+| Availability | Instances spread across 2 Availability Zones |
+
+
 ## 6. Database Schema and Design
 The system will use MySQL as the database management system hosted on AWS RDS to provide a managed, reliable relational database with automated backups and multi-AZ options. An ER diagram is included that follows third normal form (3NF) by separating entities such as Users, Courses, Sessions, and Enrollments and using primary/foreign keys and uniqueness constraints to prevent duplicate registrations and preserve data integrity.
+
+- DBMS: MySQL
+- Hosting: AWS RDS (MySQL)
+- Design Standard: 3NF (third normal form) to reduce redundancy and enforce integrity through PK/FK relationships.
+
+Key Constraints:
+- Users.email must be unique.
+- Enrollments must prevent duplicate registration for the same student in the same session (unique constraint on student_id + session_id).
+- Sessions.max_enrollment is enforced so enrollments cannot exceed capacity.
 
 ## 7. Network Architecture and Security
 The network architecture uses a dedicated VPC with redundant public and private subnets across two Availability Zones, placing the Application Load Balancer in public subnets and the application and database tiers in private subnets for isolation. Security groups will allow inbound HTTP/HTTPS (80/443) to the load balancer, allow only the application port (e.g., 3000) from the load balancer to the EC2 instances, allow MySQL (3306) only from the application tier to the database, and include restricted administrative access (SSH 22 for Linux or RDP 3389 for Windows) and ICMP/ping for troubleshooting from approved team IP addresses.
