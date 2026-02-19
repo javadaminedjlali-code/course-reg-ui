@@ -76,7 +76,7 @@ Key Constraints:
 - Users.email must be unique.
 - Enrollments must prevent duplicate registration for the same student in the same session (unique constraint on student_id + session_id).
 - Sessions.max_enrollment is enforced so enrollments cannot exceed capacity.
-![ERD](diagrams/ERD.png)
+
 
 ## 7. Network Architecture and Security
 The network architecture uses a dedicated VPC with redundant public and private subnets across two Availability Zones, placing the Application Load Balancer in public subnets and the application and database tiers in private subnets for isolation. Security groups will allow inbound HTTP/HTTPS (80/443) to the load balancer, allow only the application port (e.g., 3000) from the load balancer to the EC2 instances, allow MySQL (3306) only from the application tier to the database, and include restricted administrative access (SSH 22 for Linux or RDP 3389 for Windows) and ICMP/ping for troubleshooting from approved team IP addresses.
@@ -109,7 +109,6 @@ Security Groups:
 - SG-DB (RDS):
   - Inbound: 3306 from SG-App only
  
-  - ![Network Diagram](diagrams/Network.png)
 
 
 ## 8. Data Visualization Tool Standard
@@ -147,7 +146,7 @@ For the initial build, the system is assumed to be open to anyone and does not r
 
 The system is assumed to be open to anyone for initial building and testing, and detailed authentication/authorization implementation is out of scope. Roles are still defined for the application design: Student (search/register), Instructor (view schedule), and Administrator/Authorized User (view session enrollment lists).
 
-## 11. Team Responsibilities and Contribution Summary
+## 11. Team Responsibilities Summary
 Team responsibilities are divided so that a Cloud Architect defines AWS resources, an Application Developer defines the runtime and API design, a Database Architect produces the ERD, a Network Engineer designs the VPC/subnets and security rules, a QA Analyst defines the testing strategy, and a Project Manager coordinates timelines and merges deliverables. Each member contributed written sections and/or diagrams to this document, and any collaboration challenges (such as aligning schema definitions or resolving merge conflicts) were handled through team check-ins, shared standards, and final review before submission.
 
 Roles and Contributions:
@@ -169,5 +168,3 @@ We faced challenges aligning naming conventions and merging edits across multipl
 
 ## 12. Collaboration and GitHub Proof
 This architecture document and all supporting diagrams were committed to the team GitHub repository under the agreed documentation folder structure. A screenshot is included showing the document and diagram files in the repository to prove collaboration and successful posting.
-
-![GitHub Proof](screenshots/github-proof.png)
