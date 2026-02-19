@@ -76,21 +76,92 @@ Key Constraints:
 - Users.email must be unique.
 - Enrollments must prevent duplicate registration for the same student in the same session (unique constraint on student_id + session_id).
 - Sessions.max_enrollment is enforced so enrollments cannot exceed capacity.
+![ERD](diagrams/ERD.png)
 
 ## 7. Network Architecture and Security
 The network architecture uses a dedicated VPC with redundant public and private subnets across two Availability Zones, placing the Application Load Balancer in public subnets and the application and database tiers in private subnets for isolation. Security groups will allow inbound HTTP/HTTPS (80/443) to the load balancer, allow only the application port (e.g., 3000) from the load balancer to the EC2 instances, allow MySQL (3306) only from the application tier to the database, and include restricted administrative access (SSH 22 for Linux or RDP 3389 for Windows) and ICMP/ping for troubleshooting from approved team IP addresses.
 
+VPC and Subnets:
+- VPC CIDR: 10.0.0.0/16
+- Two Availability Zones for high availability
+- Public Subnets (ALB): 10.0.1.0/24 (AZ-A), 10.0.2.0/24 (AZ-B)
+- Private App Subnets (EC2): 10.0.11.0/24 (AZ-A), 10.0.12.0/24 (AZ-B)
+- Private DB Subnets (RDS): 10.0.21.0/24 (AZ-A), 10.0.22.0/24 (AZ-B)
+- Internet Gateway attached to the VPC
+- NAT Gateway (recommended) enables private subnets to reach the internet for patching/updates
+
+- Ports:
+- 80 (HTTP), 443 (HTTPS)
+- 3000 (Application)
+- 3306 (MySQL)
+- 22 (SSH for Linux administration) / 3389 (RDP for Windows administration)
+- ICMP (ping) allowed only from approved team IPs for troubleshooting
+
+Security Groups:
+- SG-ALB:
+  - Inbound: 80/443 from 0.0.0.0/0
+  - Outbound: 3000 to SG-App
+- SG-App (EC2):
+  - Inbound: 3000 from SG-ALB
+  - Inbound: 22 from Team IP only
+  - Inbound: ICMP from Team IP only
+  - Outbound: 3306 to SG-DB, 443 to internet (via NAT)
+- SG-DB (RDS):
+  - Inbound: 3306 from SG-App only
+ 
+  - ![Network Diagram](diagrams/Network.png)
+
+
 ## 8. Data Visualization Tool Standard
 Power BI is selected as the team’s data visualization standard because it provides strong dashboarding features, easy integration with relational data sources like MySQL, and useful AI-assisted insights for summarizing trends. It is also widely used in business environments, relatively cost-effective to scale, and familiar to many teams due to its integration with Microsoft tools.
+
+Selected Standard: Power BI
+Justification:
+- Functionality: Interactive dashboards, drilldowns, KPIs, filters/slicers for stakeholders.
+- AI and integration: Strong connectors and features for analyzing trends; integrates with MySQL data sources.
+- Team familiarity: Common in business environments and easy to learn if familiar with Excel.
+- Cost and scalability: Affordable entry options with scalable licensing for larger deployments.
+
 
 ## 9. Testing and Quality Assurance Process
 Quality assurance during sprints will include unit testing with Jest to validate individual functions and modules, integration testing with tools like Supertest to verify API routes and database interactions, and end-to-end testing with Cypress (or Playwright) to validate complete user workflows from the UI. Tests will be run consistently during development (such as on pull requests through CI) to ensure changes do not break core functionality before code is merged.
 
+Unit Testing:
+- Tool: Jest
+- Scope: Validation functions, controller logic, and utility modules.
+
+Integration Testing:
+- Tool: Supertest
+- Scope: API routes with database interactions to ensure services work together correctly.
+
+End-to-End Testing:
+- Tool: Cypress (or Playwright)
+- Scope: Full user workflows such as searching courses, registering for sessions, and confirming enrollment.
+
+Process:
+- Tests run on pull requests and before merging to main to ensure production code remains stable.
+
+
 ## 10. Authentication and Authorization
 For the initial build, the system is assumed to be open to anyone and does not require a fully implemented authentication provider, since detailed authentication and authorization processes are out of scope for this assignment. Even so, the application will define roles such as Student, Instructor, and Administrator to guide permissions and page access patterns in future iterations.
+
+The system is assumed to be open to anyone for initial building and testing, and detailed authentication/authorization implementation is out of scope. Roles are still defined for the application design: Student (search/register), Instructor (view schedule), and Administrator/Authorized User (view session enrollment lists).
 
 ## 11. Team Responsibilities and Contribution Summary
 Team responsibilities are divided so that a Cloud Architect defines AWS resources, an Application Developer defines the runtime and API design, a Database Architect produces the 3NF ERD, a Network Engineer designs the VPC/subnets and security rules, a QA Analyst defines the testing strategy, and a Project Manager coordinates timelines and merges deliverables. Each member contributed written sections and/or diagrams to this document, and any collaboration challenges (such as aligning schema definitions or resolving merge conflicts) were handled through team check-ins, shared standards, and final review before submission.
 
+Roles and Contributions:
+- Cloud Architect (Name): Selected AWS services, compute, scaling, and monitoring components.
+- Application Developer (Name): Defined Node/Express runtime, REST API design, endpoints, and port configuration.
+- Database Architect (Name): Built ERD in 3NF and documented schema constraints.
+- Network Engineer (Name): Designed VPC/subnets and security group ingress/egress rules; created network diagram.
+- QA Analyst (Name): Defined unit, integration, and end-to-end testing strategy and tools.
+- Project Manager (Name): Coordinated collaboration, ensured rubric coverage, and managed final document merge.
+
+Challenges and Resolutions:
+We faced challenges aligning naming conventions and merging edits across multiple contributors. These were resolved by assigning one final editor to merge changes, using consistent standards for diagrams/tables, and reviewing the rubric together before committing.
+
 ## 12. Collaboration and GitHub Proof
 This architecture document and all supporting diagrams were committed to the team GitHub repository under the agreed documentation folder structure. A screenshot is included showing the document and diagram files in the repository to prove collaboration and successful posting.
+
+![GitHub Proof](screenshots/github-proof.png)
